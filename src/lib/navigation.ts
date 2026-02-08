@@ -63,7 +63,7 @@ const workspaceNavItems: NavItem[] = [
   },
   {
     label: 'Settings',
-    href: '/app/settings',
+    href: '/settings',
     icon: 'Settings',
   },
 ];

@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v, ConvexError } from "convex/values";
-import { requireAuth, requireRole } from "./auth-helpers";
+import { requireAuth, requireRole, createAuditLog } from "./auth-helpers";
 import { authComponent } from "./auth";
 
 /**
@@ -251,5 +251,58 @@ export const switchOrg = mutation({
         joinedAt: membership.createdAt,
       },
     };
+  },
+});
+
+/**
+ * Update the current organization (owner or admin only)
+ */
+export const updateOrganization = mutation({
+  args: {
+    name: v.optional(v.string()),
+    slug: v.optional(v.string()),
+    logo: v.optional(v.string()),
+    metadata: v.optional(v.record(v.any())),
+  },
+  handler: async (ctx, args) => {
+    const auth = await requireAuth(ctx);
+
+    // Require owner or admin role
+    requireRole(auth, ["owner", "admin"]);
+
+    // Get the organization
+    const organization = await ctx.db.get(auth.organizationId);
+
+    if (!organization) {
+      throw new ConvexError({
+        code: "NOT_FOUND",
+        message: "Organization not found",
+      });
+    }
+
+    // Build update patch
+    const patch: any = {};
+    if (args.name !== undefined) patch.name = args.name;
+    if (args.slug !== undefined) patch.slug = args.slug;
+    if (args.logo !== undefined) patch.logo = args.logo;
+    if (args.metadata !== undefined) patch.metadata = args.metadata;
+
+    // Only update if there are changes
+    if (Object.keys(patch).length > 0) {
+      await ctx.db.patch(auth.organizationId, patch);
+
+      // Create audit log
+      await createAuditLog(
+        ctx,
+        auth,
+        "organization.updated",
+        "organization",
+        auth.organizationId,
+        { changes: patch }
+      );
+    }
+
+    // Return the updated organization
+    return await ctx.db.get(auth.organizationId);
   },
 });
