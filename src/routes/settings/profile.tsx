@@ -1,6 +1,6 @@
 import { createFileRoute, Navigate } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/settings/_layout/profile')({
+export const Route = createFileRoute('/settings/profile')({
   component: ProfileRedirect,
 })
 

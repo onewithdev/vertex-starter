@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
+import { Route as SettingsLayoutRouteImport } from './routes/settings/_layout'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthLayoutRouteImport } from './routes/auth/_layout'
@@ -21,9 +24,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/app/',
   path: '/app/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsProfileRoute = SettingsProfileRouteImport.update({
+  id: '/settings/profile',
+  path: '/settings/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsLayoutRoute = SettingsLayoutRouteImport.update({
+  id: '/settings/_layout',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
@@ -53,7 +71,10 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthLayoutRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/settings': typeof SettingsLayoutRoute
+  '/settings/profile': typeof SettingsProfileRoute
   '/app/': typeof AppIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,6 +82,8 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthLayoutRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/settings': typeof SettingsIndexRoute
+  '/settings/profile': typeof SettingsProfileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,13 +92,32 @@ export interface FileRoutesById {
   '/auth/_layout': typeof AuthLayoutRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/settings/_layout': typeof SettingsLayoutRoute
+  '/settings/profile': typeof SettingsProfileRoute
   '/app/': typeof AppIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/auth' | '/auth/login' | '/auth/register' | '/app/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/auth/login'
+    | '/auth/register'
+    | '/settings'
+    | '/settings/profile'
+    | '/app/'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/auth' | '/auth/login' | '/auth/register'
+  to:
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/auth/login'
+    | '/auth/register'
+    | '/settings'
+    | '/settings/profile'
   id:
     | '__root__'
     | '/'
@@ -83,7 +125,10 @@ export interface FileRouteTypes {
     | '/auth/_layout'
     | '/auth/login'
     | '/auth/register'
+    | '/settings/_layout'
+    | '/settings/profile'
     | '/app/'
+    | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -92,7 +137,10 @@ export interface RootRouteChildren {
   AuthLayoutRoute: typeof AuthLayoutRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  SettingsLayoutRoute: typeof SettingsLayoutRoute
+  SettingsProfileRoute: typeof SettingsProfileRoute
   AppIndexRoute: typeof AppIndexRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -104,11 +152,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/': {
       id: '/app/'
       path: '/app'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/profile': {
+      id: '/settings/profile'
+      path: '/settings/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof SettingsProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/_layout': {
+      id: '/settings/_layout'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/register': {
@@ -148,7 +217,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLayoutRoute: AuthLayoutRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  SettingsLayoutRoute: SettingsLayoutRoute,
+  SettingsProfileRoute: SettingsProfileRoute,
   AppIndexRoute: AppIndexRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

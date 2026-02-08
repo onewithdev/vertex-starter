@@ -16,7 +16,7 @@ interface TabConfig {
   featureFlag?: boolean
 }
 
-export const Route = createFileRoute('/settings/_layout/')({
+export const Route = createFileRoute('/settings/')({
   component: SettingsPage,
 })
 
