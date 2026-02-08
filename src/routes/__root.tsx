@@ -1,15 +1,17 @@
 /// <reference types="vite/client" />
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRouteWithContext, useRouter } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ConvexReactClient } from "convex/react"
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
-import { authClient } from "@/lib/auth-client"
-import { useState } from "react"
+import { authClient, useSession } from "@/lib/auth-client"
+import { useState, useEffect } from "react"
+import type { RouterContext } from "@/router"
 
 import appCss from '../styles.css?url'
 
-export const Route = createRootRoute({
+// Create the root route with context
+export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       {
@@ -50,7 +52,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ConvexBetterAuthProvider client={convex} authClient={authClient}>
-          {children}
+          <AuthWrapper>
+            {children}
+          </AuthWrapper>
           <TanStackDevtools
             config={{
               position: 'bottom-right',
@@ -67,4 +71,31 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   )
+}
+
+// Auth wrapper to provide authentication context to the router
+function AuthWrapper({ children }: { children: React.ReactNode }) {
+  const { data: session, isPending } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isPending) {
+      const isAuthenticated = !!session?.user
+      
+      // Update router context with authentication state
+      router.update({
+        context: {
+          auth: {
+            isAuthenticated,
+          },
+        },
+      })
+
+      // Trigger a reload of the current route to re-evaluate beforeLoad guards
+      // This handles the case where session loads after initial route resolution
+      router.invalidate()
+    }
+  }, [session, isPending, router])
+
+  return <>{children}</>
 }
