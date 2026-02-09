@@ -23,7 +23,7 @@ import { signOut, useSession } from "@/lib/auth-client";
 import { useNavigate } from "@tanstack/react-router";
 import { Skeleton } from "@/components/ui/skeleton";
 import { appConfig } from "@/config/app.config";
-import { ChevronsUpDown, Plus, Check } from "lucide-react";
+import { ChevronsUpDown, Plus, Check, Building2 } from "lucide-react";
 
 interface OrganizationWithRole {
   organization: {
@@ -108,9 +108,28 @@ function NavbarOrgSwitcher() {
   // Empty state - no organizations
   if (organizations.length === 0) {
     return (
-      <div className="flex items-center gap-2 px-2 text-sm text-muted-foreground">
-        <span>No Organization</span>
-      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="relative h-8 gap-2 rounded-full px-2">
+            <div className="flex size-6 items-center justify-center rounded-md border-2 border-dashed border-muted-foreground bg-transparent">
+              <Building2 className="size-4 text-muted-foreground" />
+            </div>
+            <span className="max-w-[120px] truncate text-sm text-muted-foreground">
+              No organization
+            </span>
+            <ChevronsUpDown className="size-4 text-muted-foreground" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>Organizations</DropdownMenuLabel>
+          <DropdownMenuItem asChild className="gap-2 cursor-pointer">
+            <Link to="/settings/org">
+              <Building2 className="size-4" />
+              <span>Create your first organization</span>
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 
