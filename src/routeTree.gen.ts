@@ -17,6 +17,10 @@ import { Route as SettingsLayoutRouteImport } from './routes/settings/_layout'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthLayoutRouteImport } from './routes/auth/_layout'
+import { Route as AppTasksRouteImport } from './routes/app/tasks'
+import { Route as AppProjectsRouteImport } from './routes/app/projects'
+import { Route as AppMembersRouteImport } from './routes/app/members'
+import { Route as AppBillingRouteImport } from './routes/app/billing'
 import { Route as AppLayoutRouteImport } from './routes/app/_layout'
 
 const IndexRoute = IndexRouteImport.update({
@@ -59,6 +63,26 @@ const AuthLayoutRoute = AuthLayoutRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppTasksRoute = AppTasksRouteImport.update({
+  id: '/app/tasks',
+  path: '/app/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppProjectsRoute = AppProjectsRouteImport.update({
+  id: '/app/projects',
+  path: '/app/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppMembersRoute = AppMembersRouteImport.update({
+  id: '/app/members',
+  path: '/app/members',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppBillingRoute = AppBillingRouteImport.update({
+  id: '/app/billing',
+  path: '/app/billing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppLayoutRoute = AppLayoutRouteImport.update({
   id: '/app/_layout',
   path: '/app',
@@ -68,6 +92,10 @@ const AppLayoutRoute = AppLayoutRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppLayoutRoute
+  '/app/billing': typeof AppBillingRoute
+  '/app/members': typeof AppMembersRoute
+  '/app/projects': typeof AppProjectsRoute
+  '/app/tasks': typeof AppTasksRoute
   '/auth': typeof AuthLayoutRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
@@ -79,6 +107,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppIndexRoute
+  '/app/billing': typeof AppBillingRoute
+  '/app/members': typeof AppMembersRoute
+  '/app/projects': typeof AppProjectsRoute
+  '/app/tasks': typeof AppTasksRoute
   '/auth': typeof AuthLayoutRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
@@ -89,6 +121,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app/_layout': typeof AppLayoutRoute
+  '/app/billing': typeof AppBillingRoute
+  '/app/members': typeof AppMembersRoute
+  '/app/projects': typeof AppProjectsRoute
+  '/app/tasks': typeof AppTasksRoute
   '/auth/_layout': typeof AuthLayoutRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
@@ -102,6 +138,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/app/billing'
+    | '/app/members'
+    | '/app/projects'
+    | '/app/tasks'
     | '/auth'
     | '/auth/login'
     | '/auth/register'
@@ -113,6 +153,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/app'
+    | '/app/billing'
+    | '/app/members'
+    | '/app/projects'
+    | '/app/tasks'
     | '/auth'
     | '/auth/login'
     | '/auth/register'
@@ -122,6 +166,10 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app/_layout'
+    | '/app/billing'
+    | '/app/members'
+    | '/app/projects'
+    | '/app/tasks'
     | '/auth/_layout'
     | '/auth/login'
     | '/auth/register'
@@ -134,6 +182,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppLayoutRoute: typeof AppLayoutRoute
+  AppBillingRoute: typeof AppBillingRoute
+  AppMembersRoute: typeof AppMembersRoute
+  AppProjectsRoute: typeof AppProjectsRoute
+  AppTasksRoute: typeof AppTasksRoute
   AuthLayoutRoute: typeof AuthLayoutRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
@@ -201,6 +253,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/tasks': {
+      id: '/app/tasks'
+      path: '/app/tasks'
+      fullPath: '/app/tasks'
+      preLoaderRoute: typeof AppTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/projects': {
+      id: '/app/projects'
+      path: '/app/projects'
+      fullPath: '/app/projects'
+      preLoaderRoute: typeof AppProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/members': {
+      id: '/app/members'
+      path: '/app/members'
+      fullPath: '/app/members'
+      preLoaderRoute: typeof AppMembersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/billing': {
+      id: '/app/billing'
+      path: '/app/billing'
+      fullPath: '/app/billing'
+      preLoaderRoute: typeof AppBillingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/_layout': {
       id: '/app/_layout'
       path: '/app'
@@ -214,6 +294,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppLayoutRoute: AppLayoutRoute,
+  AppBillingRoute: AppBillingRoute,
+  AppMembersRoute: AppMembersRoute,
+  AppProjectsRoute: AppProjectsRoute,
+  AppTasksRoute: AppTasksRoute,
   AuthLayoutRoute: AuthLayoutRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,

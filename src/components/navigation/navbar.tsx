@@ -1,6 +1,6 @@
 "use client";
 
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useMatch } from "@tanstack/react-router";
 import * as Icons from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { mainNavigation, workspaceNavigation, type NavItem } from "@/lib/navigation";
@@ -28,12 +28,17 @@ interface NavLinkProps {
 }
 
 function NavLink({ item }: NavLinkProps) {
-  const location = useLocation();
   const Icon = (Icons as unknown as Record<string, LucideIcon>)[item.icon] || Icons.Circle;
 
-  const isActive =
-    item.href === location.pathname ||
-    (item.href !== "/app" && location.pathname.startsWith(item.href));
+  // Use useMatch for type-safe, precise route matching
+  // shouldThrow: false returns undefined instead of throwing when route doesn't match
+  // For /app, use exact matching (params: {}) so it doesn't stay active on descendant routes
+  const match = useMatch({ 
+    from: item.href as "/", 
+    shouldThrow: false,
+    ...(item.href === "/app" ? { params: {} } : {})
+  });
+  const isActive = match !== undefined;
 
   return (
     <Link
