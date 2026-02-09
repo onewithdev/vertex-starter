@@ -2,9 +2,15 @@ import { createFileRoute, redirect, Outlet, useNavigate, useLocation } from '@ta
 import { Sidebar } from '@/components/navigation/sidebar'
 import { useSession } from '@/lib/auth-client'
 import { useEffect } from 'react'
+import { appConfig } from '@/config/app.config'
 
 export const Route = createFileRoute('/app/_layout')({
   beforeLoad: async ({ context, location }) => {
+    // Skip auth check if auth feature is disabled
+    if (!appConfig.auth.enabled) {
+      return
+    }
+
     // Check if user is authenticated
     if (!context.auth.isAuthenticated) {
       throw redirect({
@@ -24,6 +30,11 @@ function AppLayoutComponent() {
   const location = useLocation()
 
   useEffect(() => {
+    // Skip session validation if auth is disabled
+    if (!appConfig.auth.enabled) {
+      return
+    }
+
     // Handle late session resolution - redirect if user is not authenticated
     if (!isPending && !session?.user) {
       navigate({ 
