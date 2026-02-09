@@ -14,6 +14,7 @@ export interface FeatureFlags {
 }
 
 export interface AuthConfig {
+  enabled: boolean;
   providers: string[];
   allowEmailPassword: boolean;
   requireEmailVerification: boolean;
@@ -57,6 +58,7 @@ export const appConfig: AppConfig = {
     tasks: true,
   },
   auth: {
+    enabled: true,
     providers: ['github'],
     allowEmailPassword: true,
     requireEmailVerification: true,

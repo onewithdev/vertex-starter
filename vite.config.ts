@@ -18,7 +18,11 @@ const config = defineConfig({
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
     }),
-    tanstackStart(),
+    tanstackStart({
+      router: {
+        routeFileIgnorePattern: 'api\\.', // Ignore API route files from page routing
+      },
+    }),
     tailwindcss(),
     viteReact(),
   ],

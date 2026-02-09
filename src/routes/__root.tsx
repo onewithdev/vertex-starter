@@ -77,9 +77,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 function AuthWrapper({ children }: { children: React.ReactNode }) {
   const { data: session, isPending } = useSession()
   const router = useRouter()
+  const [hasMounted, setHasMounted] = useState(false)
+
+  // Prevent hydration mismatch by not updating context until after mount
+  useEffect(() => {
+    setHasMounted(true)
+  }, [])
 
   useEffect(() => {
-    if (!isPending) {
+    if (!isPending && hasMounted) {
       const isAuthenticated = !!session?.user
       
       // Update router context with authentication state
@@ -95,7 +101,12 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
       // This handles the case where session loads after initial route resolution
       router.invalidate()
     }
-  }, [session, isPending, router])
+  }, [session, isPending, router, hasMounted])
+
+  // Return a wrapper that matches server rendering to prevent hydration issues
+  if (!hasMounted) {
+    return <>{children}</>
+  }
 
   return <>{children}</>
 }
