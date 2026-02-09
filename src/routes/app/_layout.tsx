@@ -73,7 +73,8 @@ function AppLayoutComponent() {
           <AlertDescription className="flex items-center justify-between">
             <span>You're not part of any organization yet.</span>
             <Link
-              to="/settings/org"
+              to="/settings"
+              search={{ tab: 'organization' }}
               className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
             >
               Create organization

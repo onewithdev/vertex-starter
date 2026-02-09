@@ -78,6 +78,11 @@ function MobileNavItem({ item }: NavLinkProps) {
 }
 
 function NavbarOrgSwitcher() {
+  // Skip rendering when auth is disabled
+  if (!appConfig.auth.enabled) {
+    return null;
+  }
+
   const navigate = useNavigate();
   const [isSwitching, setIsSwitching] = useState(false);
 
@@ -133,7 +138,7 @@ function NavbarOrgSwitcher() {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>Organizations</DropdownMenuLabel>
           <DropdownMenuItem asChild className="gap-2 cursor-pointer">
-            <Link to="/settings/org">
+            <Link to="/settings" search={{ tab: 'organization' }}>
               <Building2 className="size-4" />
               <span>Create your first organization</span>
             </Link>
@@ -200,6 +205,11 @@ function NavbarOrgSwitcher() {
 }
 
 function UserMenu() {
+  // Skip rendering when auth is disabled
+  if (!appConfig.auth.enabled) {
+    return null;
+  }
+
   const navigate = useNavigate();
   const userData = useQuery(api.users.getCurrentWithOrg);
   const user = userData?.user;

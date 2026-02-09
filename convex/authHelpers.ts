@@ -1,5 +1,4 @@
-import { ConvexError, v } from "convex/values";
-import { query } from "./_generated/server";
+import { ConvexError } from "convex/values";
 import { authComponent } from "./auth";
 
 /**
@@ -21,6 +20,7 @@ export interface AuthContext {
  * @throws {ConvexError} NOT_MEMBER - if user is not a member of the organization
  */
 export async function requireAuth(ctx: any): Promise<AuthContext> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   // Get authenticated user from Better Auth
   const user = await authComponent.getAuthUser(ctx);
 
@@ -32,7 +32,7 @@ export async function requireAuth(ctx: any): Promise<AuthContext> {
   }
 
   // Get active organization from user's session
-  const activeOrganizationId = user.session?.activeOrganizationId;
+  const activeOrganizationId = (user as any).session?.activeOrganizationId;
 
   if (!activeOrganizationId) {
     throw new ConvexError({
@@ -41,8 +41,8 @@ export async function requireAuth(ctx: any): Promise<AuthContext> {
     });
   }
 
-  // Verify user is a member of the organization
-  const membership = await ctx.db
+  // Verify user is a member of the organization from Better Auth component
+  const membership = await (ctx.db as any)
     .query("member")
     .withIndex("by_user_organization", (q: any) =>
       q.eq("userId", user._id).eq("organizationId", activeOrganizationId)
@@ -96,8 +96,8 @@ export async function createAuditLog(
   metadata?: any
 ): Promise<void> {
   await ctx.db.insert("auditLog", {
-    organizationId: auth.organizationId,
-    userId: auth.userId,
+    organizationId: auth.organizationId as any,
+    userId: auth.userId as any,
     action,
     entityType,
     entityId,

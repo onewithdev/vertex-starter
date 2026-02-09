@@ -44,9 +44,9 @@ export const appConfig: AppConfig = {
     description: 'Multi-tenant project management platform',
   },
   layout: {
-    mode: 'sidebar',
-    sidebarCollapsible: true,
-    showBreadcrumbs: true,
+    mode: 'topnav',
+    sidebarCollapsible: false,
+    showBreadcrumbs: false,
   },
   features: {
     multiTenant: true,

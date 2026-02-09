@@ -16,15 +16,15 @@ export const listForUser = query({
       return [];
     }
 
-    // Get all memberships for this user
-    const memberships = await ctx.db
+    // Get all memberships for this user from Better Auth component
+    const memberships = await (ctx.db as any)
       .query("member")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .withIndex("by_user", (q: any) => q.eq("userId", user._id))
       .collect();
 
     // Fetch organization details for each membership
     const organizationsWithRole = await Promise.all(
-      memberships.map(async (membership) => {
+      memberships.map(async (membership: any) => {
         const organization = await ctx.db.get(membership.organizationId);
         return {
           organization,
@@ -46,7 +46,7 @@ export const getCurrent = query({
   handler: async (ctx) => {
     const auth = await requireAuth(ctx);
 
-    const organization = await ctx.db.get(auth.organizationId);
+    const organization = await ctx.db.get(auth.organizationId as any);
 
     if (!organization) {
       throw new ConvexError({
@@ -67,26 +67,26 @@ export const getMembers = query({
   handler: async (ctx) => {
     const auth = await requireAuth(ctx);
 
-    // Get all memberships for this organization
-    const memberships = await ctx.db
+    // Get all memberships for this organization from Better Auth component
+    const memberships = await (ctx.db as any)
       .query("member")
-      .withIndex("by_organization", (q) =>
+      .withIndex("by_organization", (q: any) =>
         q.eq("organizationId", auth.organizationId)
       )
       .collect();
 
     // Fetch user details for each membership
     const membersWithUserDetails = await Promise.all(
-      memberships.map(async (membership) => {
+      memberships.map(async (membership: any) => {
         const user = await ctx.db.get(membership.userId);
         return {
           ...membership,
           user: user
             ? {
                 id: user._id,
-                name: user.name,
-                email: user.email,
-                image: user.image,
+                name: (user as any).name,
+                email: (user as any).email,
+                image: (user as any).image,
               }
             : null,
         };
@@ -102,7 +102,7 @@ export const getMembers = query({
  */
 export const updateMember = mutation({
   args: {
-    memberId: v.id("member"),
+    memberId: v.id("member" as any),
     role: v.string(),
   },
   handler: async (ctx, args) => {
@@ -111,8 +111,8 @@ export const updateMember = mutation({
     // Require owner or admin role
     requireRole(auth, ["owner", "admin"]);
 
-    // Get the membership to update
-    const membership = await ctx.db.get(args.memberId);
+    // Get the membership to update from Better Auth component
+    const membership = await (ctx.db as any).get(args.memberId);
 
     if (!membership) {
       throw new ConvexError({
@@ -138,7 +138,7 @@ export const updateMember = mutation({
     }
 
     // Update the membership role
-    await ctx.db.patch(args.memberId, {
+    await (ctx.db as any).patch(args.memberId, {
       role: args.role,
     });
 
@@ -151,7 +151,7 @@ export const updateMember = mutation({
  */
 export const removeMember = mutation({
   args: {
-    userId: v.id("user"),
+    userId: v.id("user" as any),
   },
   handler: async (ctx, args) => {
     const auth = await requireAuth(ctx);
@@ -167,10 +167,10 @@ export const removeMember = mutation({
       });
     }
 
-    // Find the membership
-    const membership = await ctx.db
+    // Find the membership from Better Auth component
+    const membership = await (ctx.db as any)
       .query("member")
-      .withIndex("by_user_organization", (q) =>
+      .withIndex("by_user_organization", (q: any) =>
         q.eq("userId", args.userId).eq("organizationId", auth.organizationId)
       )
       .unique();
@@ -191,7 +191,7 @@ export const removeMember = mutation({
     }
 
     // Delete the membership
-    await ctx.db.delete(membership._id);
+    await (ctx.db as any).delete(membership._id);
 
     return args.userId;
   },
@@ -202,16 +202,16 @@ export const removeMember = mutation({
  */
 export const switchOrg = mutation({
   args: {
-    organizationId: v.id("organization"),
+    organizationId: v.id("organization" as any),
   },
   handler: async (ctx, args) => {
     // Get authenticated user
     const user = await authComponent.getAuthUser(ctx);
 
-    // Verify user is a member of the target organization
-    const membership = await ctx.db
+    // Verify user is a member of the target organization from Better Auth component
+    const membership = await (ctx.db as any)
       .query("member")
-      .withIndex("by_user_organization", (q) =>
+      .withIndex("by_user_organization", (q: any) =>
         q.eq("userId", user._id).eq("organizationId", args.organizationId)
       )
       .unique();
@@ -223,10 +223,10 @@ export const switchOrg = mutation({
       });
     }
 
-    // Get the current session
-    const session = await ctx.db
+    // Get the current session from Better Auth component
+    const session = await (ctx.db as any)
       .query("session")
-      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .withIndex("userId", (q: any) => q.eq("userId", user._id))
       .order("desc")
       .first();
 
@@ -238,7 +238,7 @@ export const switchOrg = mutation({
     }
 
     // Update the session's activeOrganizationId
-    await ctx.db.patch(session._id, {
+    await (ctx.db as any).patch(session._id, {
       activeOrganizationId: args.organizationId,
     });
 
@@ -271,7 +271,7 @@ export const updateOrganization = mutation({
     requireRole(auth, ["owner", "admin"]);
 
     // Get the organization
-    const organization = await ctx.db.get(auth.organizationId);
+    const organization = await ctx.db.get(auth.organizationId as any);
 
     if (!organization) {
       throw new ConvexError({
@@ -289,7 +289,7 @@ export const updateOrganization = mutation({
 
     // Only update if there are changes
     if (Object.keys(patch).length > 0) {
-      await ctx.db.patch(auth.organizationId, patch);
+      await ctx.db.patch(auth.organizationId as any, patch);
 
       // Create audit log
       await createAuditLog(
@@ -303,6 +303,6 @@ export const updateOrganization = mutation({
     }
 
     // Return the updated organization
-    return await ctx.db.get(auth.organizationId);
+    return await ctx.db.get(auth.organizationId as any);
   },
 });
