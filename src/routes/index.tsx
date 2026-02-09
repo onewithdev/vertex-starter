@@ -1,24 +1,31 @@
 import { createFileRoute, Navigate } from '@tanstack/react-router'
 import { useSession } from '@/lib/auth-client'
-import { Skeleton } from '@/components/ui/skeleton'
+import { ClientOnly } from '@/components/shared/client-only'
+import { appConfig } from '@/config/app.config'
 
 export const Route = createFileRoute('/')({
   component: HomeComponent,
 })
 
 function HomeComponent() {
+  return (
+    <ClientOnly fallback={null}>
+      <AuthAwareRedirect />
+    </ClientOnly>
+  )
+}
+
+function AuthAwareRedirect() {
+  // Check auth feature flag first
+  if (!appConfig.auth.enabled) {
+    return <Navigate to="/app" />
+  }
+
   const { data: session, isPending } = useSession()
 
-  // Show loading state while checking auth status
+  // Loading state - minimal since we're client-only
   if (isPending) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <div className="flex flex-col items-center space-y-4">
-          <Skeleton className="h-12 w-48" />
-          <Skeleton className="h-4 w-32" />
-        </div>
-      </div>
-    )
+    return null
   }
 
   // Redirect based on authentication status
