@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Link, useMatch } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import * as Icons from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { mainNavigation, workspaceNavigation, type NavItem } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
+import { useNavItem } from "@/hooks/use-nav-item";
 import { Logo } from "@/components/shared/logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +23,7 @@ import { signOut, useSession } from "@/lib/auth-client";
 import { useNavigate } from "@tanstack/react-router";
 import { Skeleton } from "@/components/ui/skeleton";
 import { appConfig } from "@/config/app.config";
-import { ChevronsUpDown, Plus, Check, Building2 } from "lucide-react";
+import { ChevronsUpDown, Plus, Check, Building2, Menu } from "lucide-react";
 
 interface OrganizationWithRole {
   organization: {
@@ -39,17 +39,7 @@ interface NavLinkProps {
 }
 
 function NavLink({ item }: NavLinkProps) {
-  const Icon = (Icons as unknown as Record<string, LucideIcon>)[item.icon] || Icons.Circle;
-
-  // Use useMatch for type-safe, precise route matching
-  // shouldThrow: false returns undefined instead of throwing when route doesn't match
-  // For /app, use exact matching (params: {}) so it doesn't stay active on descendant routes
-  const match = useMatch({ 
-    from: item.href as "/", 
-    shouldThrow: false,
-    ...(item.href === "/app" ? { params: {} } : {})
-  });
-  const isActive = match !== undefined;
+  const { Icon, isActive } = useNavItem(item);
 
   return (
     <Link
@@ -64,6 +54,26 @@ function NavLink({ item }: NavLinkProps) {
       <Icon className="size-4" />
       <span>{item.label}</span>
     </Link>
+  );
+}
+
+function MobileNavItem({ item }: NavLinkProps) {
+  const { Icon, isActive } = useNavItem(item);
+
+  return (
+    <DropdownMenuItem asChild>
+      <Link 
+        to={item.href as "/"} 
+        className={cn(
+          "flex items-center gap-2 cursor-pointer",
+          isActive && "bg-accent"
+        )}
+      >
+        <Icon className={cn("size-4", isActive && "text-primary")} />
+        <span className="flex-1">{item.label}</span>
+        {isActive && <Icons.Check className="size-4 text-primary" />}
+      </Link>
+    </DropdownMenuItem>
   );
 }
 
@@ -286,20 +296,37 @@ export function Navbar({ children }: NavbarProps) {
       {/* Top Navigation Bar */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center px-4">
+          {/* Mobile Hamburger Menu */}
+          <div className="mr-2 lg:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <Menu className="size-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuLabel>Navigation</DropdownMenuLabel>
+                {allNavItems.map((item) => (
+                  <MobileNavItem key={item.href} item={item} />
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           {/* Logo */}
           <div className="mr-6">
             <Logo size="sm" />
           </div>
 
-          {/* Main Navigation */}
-          <nav className="flex flex-1 items-center gap-1">
+          {/* Main Navigation - Desktop only */}
+          <nav className="hidden lg:flex flex-1 items-center gap-1">
             {allNavItems.map((item) => (
               <NavLink key={item.href} item={item} />
             ))}
           </nav>
 
           {/* Right side - Org switcher and User menu */}
-          <div className="flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2">
             {appConfig.auth.enabled ? (
               <>
                 <NavbarOrgSwitcher />
