@@ -5,6 +5,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ConvexReactClient } from "convex/react"
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
 import { authClient, useSession } from "@/lib/auth-client"
+import { appConfig } from "@/config/app.config"
 import { useState, useEffect } from "react"
 import type { RouterContext } from "@/router"
 
@@ -75,6 +76,45 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 // Auth wrapper to provide authentication context to the router
 function AuthWrapper({ children }: { children: React.ReactNode }) {
+  // If auth is disabled, use the disabled auth wrapper
+  if (!appConfig.auth.enabled) {
+    return <AuthDisabledWrapper>{children}</AuthDisabledWrapper>
+  }
+
+  return <AuthEnabledWrapper>{children}</AuthEnabledWrapper>
+}
+
+// Wrapper when auth is disabled - sets auth state to true without reading session
+function AuthDisabledWrapper({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
+  const [hasMounted, setHasMounted] = useState(false)
+
+  useEffect(() => {
+    setHasMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (hasMounted) {
+      router.update({
+        context: {
+          auth: {
+            isAuthenticated: true,
+          },
+        },
+      })
+    }
+  }, [hasMounted, router])
+
+  // Return a wrapper that matches server rendering to prevent hydration issues
+  if (!hasMounted) {
+    return <>{children}</>
+  }
+
+  return <>{children}</>
+}
+
+// Wrapper when auth is enabled - handles session-based auth
+function AuthEnabledWrapper({ children }: { children: React.ReactNode }) {
   const { data: session, isPending } = useSession()
   const router = useRouter()
   const [hasMounted, setHasMounted] = useState(false)

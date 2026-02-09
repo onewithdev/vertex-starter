@@ -1,9 +1,17 @@
 import { createFileRoute, redirect, Outlet, useNavigate } from '@tanstack/react-router'
 import { useSession } from '@/lib/auth-client'
 import { useEffect } from 'react'
+import { appConfig } from '@/config/app.config'
 
 export const Route = createFileRoute('/auth/_layout')({
   beforeLoad: async ({ context }) => {
+    // If auth is disabled, redirect to app
+    if (!appConfig.auth.enabled) {
+      throw redirect({
+        to: '/app',
+      })
+    }
+
     // Redirect authenticated users to the app
     if (context.auth.isAuthenticated) {
       throw redirect({
@@ -19,6 +27,11 @@ function AuthLayoutComponent() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    // Skip session monitoring when auth is disabled
+    if (!appConfig.auth.enabled) {
+      return
+    }
+
     // Handle late session resolution - redirect if user becomes authenticated
     if (!isPending && session?.user) {
       navigate({ to: '/app' })
