@@ -1,6 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v, ConvexError } from "convex/values";
-import { requireAuth, requireRole, createAuditLog } from "./auth-helpers";
+import { requireAuth, requireRole, createAuditLog } from "./authHelpers";
 import { authComponent } from "./auth";
 
 /**
@@ -262,7 +262,7 @@ export const updateOrganization = mutation({
     name: v.optional(v.string()),
     slug: v.optional(v.string()),
     logo: v.optional(v.string()),
-    metadata: v.optional(v.record(v.any())),
+    metadata: v.optional(v.record(v.string(), v.any())),
   },
   handler: async (ctx, args) => {
     const auth = await requireAuth(ctx);

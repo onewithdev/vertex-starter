@@ -5,7 +5,7 @@ import {
   requireRole,
   createAuditLog,
   type AuthContext,
-} from "./auth-helpers";
+} from "./authHelpers";
 
 /**
  * List all projects for the current organization

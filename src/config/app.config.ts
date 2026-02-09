@@ -58,7 +58,7 @@ export const appConfig: AppConfig = {
     tasks: true,
   },
   auth: {
-    enabled: true,
+    enabled: false,
     providers: ['github'],
     allowEmailPassword: true,
     requireEmailVerification: true,
