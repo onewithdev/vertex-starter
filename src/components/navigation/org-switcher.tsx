@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "@convex/api";
+import { api } from "@/convex/api";
 import { useSession } from "@/lib/auth-client";
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronsUpDown, Plus, Check } from "lucide-react";

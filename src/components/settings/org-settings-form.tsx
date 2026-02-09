@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Building2, Loader2, CheckCircle2, Users, Crown } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
-import { api } from '@convex/api'
+import { api } from '@/convex/api'
 import { authClient } from '@/lib/auth-client'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'

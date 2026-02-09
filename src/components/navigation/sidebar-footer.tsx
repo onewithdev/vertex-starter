@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { api } from "@convex/api";
+import { api } from "@/convex/api";
 import { SidebarFooter as SidebarFooterPrimitive } from "@/components/ui/sidebar";
 import { UserMenu } from "./user-menu";
 import { Skeleton } from "@/components/ui/skeleton";

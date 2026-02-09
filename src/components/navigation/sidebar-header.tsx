@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { api } from "@convex/api";
+import { api } from "@/convex/api";
 import { useFeature } from "@/hooks/use-app-config";
 import { SidebarHeader as SidebarHeaderPrimitive } from "@/components/ui/sidebar";
 import { OrgSwitcher } from "./org-switcher";
