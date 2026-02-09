@@ -12,16 +12,20 @@ const config = defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  // Required for @convex-dev/better-auth to avoid module resolution issues during SSR
+  ssr: {
+    noExternal: ['@convex-dev/better-auth'],
+  },
   plugins: [
     devtools(),
-    // this is the plugin that enables path aliases
+    // IMPORTANT: tanstackStart must come before viteTsConfigPaths for proper route discovery
+    tanstackStart({
+      // REMOVED: routeFileIgnorePattern: 'api\\.'
+      // This pattern was preventing API routes from being discovered!
+      // API routes should be placed in src/routes/api/ directory and use createAPIFileRoute
+    }),
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
-    }),
-    tanstackStart({
-      router: {
-        routeFileIgnorePattern: 'api\\.', // Ignore API route files from page routing
-      },
     }),
     tailwindcss(),
     viteReact(),

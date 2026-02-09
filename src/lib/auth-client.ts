@@ -1,11 +1,19 @@
 import { createAuthClient } from "better-auth/react";
-import { convexClient } from "@convex-dev/better-auth/client/plugins";
+import {
+  convexClient,
+  crossDomainClient,
+} from "@convex-dev/better-auth/client/plugins";
 import { organizationClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
-  baseURL: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000',
+  // Point to the Convex site URL where Better Auth routes are hosted
+  baseURL: import.meta.env.VITE_CONVEX_SITE_URL,
   plugins: [
+    // Required for Convex integration
     convexClient(),
+    // Required for client-side frameworks (React SPA) to handle cross-domain cookies
+    crossDomainClient(),
+    // Enable organization/team support
     organizationClient(),
   ],
 });

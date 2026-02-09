@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, Outlet, useNavigate, useLocation } from '@tanstack/react-router'
-import { Sidebar } from '@/components/navigation/sidebar'
+import { Navbar } from '@/components/navigation/navbar'
 import { useSession } from '@/lib/auth-client'
 import { useEffect } from 'react'
 import { appConfig } from '@/config/app.config'
@@ -47,8 +47,10 @@ function AppLayoutComponent() {
   }, [session, isPending, navigate, location.href])
 
   return (
-    <Sidebar>
-      <Outlet />
-    </Sidebar>
+    <Navbar>
+      <div className="container mx-auto py-6 px-4">
+        <Outlet />
+      </div>
+    </Navbar>
   )
 }

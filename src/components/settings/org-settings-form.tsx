@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Building2, Loader2, CheckCircle2, Users, Crown } from 'lucide-react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '@/convex/api'
-import { authClient } from '@/lib/auth-client'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { EmptyState } from '@/components/shared/empty-state'
+import { appConfig } from '@/config/app.config'
 
 interface Member {
   _id: string
@@ -27,7 +27,9 @@ interface Member {
 }
 
 export function OrgSettingsForm() {
-  const orgData = useQuery(api.users.getCurrentWithOrg)
+  // Skip queries if auth is disabled - similar to how ProfileForm handles no-auth
+  const shouldSkipQueries = !appConfig.auth.enabled
+  const orgData = useQuery(api.users.getCurrentWithOrg, shouldSkipQueries ? 'skip' : {})
   const members = useQuery(api.organizations.getMembers, orgData?.organization ? {} : 'skip')
 
   const [orgName, setOrgName] = useState('')
@@ -103,8 +105,23 @@ export function OrgSettingsForm() {
     return email.charAt(0).toUpperCase()
   }
 
+  // No-auth mode - show appropriate empty state
+  if (shouldSkipQueries) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          <EmptyState
+            icon={Building2}
+            title="Organization Settings Unavailable"
+            description="Authentication is disabled. Organization settings require user authentication to manage."
+          />
+        </CardContent>
+      </Card>
+    )
+  }
+
   // Loading state
-  if (!orgData || !members) {
+  if (orgData === undefined || (organization && members === undefined)) {
     return (
       <div className="space-y-6">
         <Card>
